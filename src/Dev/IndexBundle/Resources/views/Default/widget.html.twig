@@ -1,0 +1,66 @@
+
+
+<style>
+
+
+    #day_weather_table{
+
+        width: 300px;
+        margin:10px;
+
+    }
+
+    #day_weather_table td{
+
+        width: 50px;
+        margin-bottom:20px;
+    }
+    #weather_cont{
+        display:inline-block;
+        margin:10px;
+    }
+
+    #info{
+        margin:10px;
+        font-style: italic;
+    }
+
+
+</style>
+{% set date = out.day~"."~out.month~"."~out.year %}
+<div id="weather_cont">
+ <div class="panel panel-default"  id="contents">
+ <div  class="panel-heading">
+
+     <div id="info">
+     <div id='date'>{{ ("Дата: "~ date) }}</div>
+     <div id='day_of_week'>{{ ("День недели: "~ out.day_of_week) }}</div>
+     </div>
+     </div>
+  <div  class="panel-body">
+      <table class = "table table-bordered table-hover" id="day_weather_table">
+          {% for weather in out.weather %}
+              <tr>
+
+
+                  <td><img  src='http://yandex.st/weather/1.1.78/i/icons/48x48/{{ weather.image }}.png'/>
+                  </td>
+                    <td>
+                        {{ weather.temp_from  }}
+                    </td>
+                  <td>
+                      {{ weather.temp_to  }}
+                  </td>
+                  <td>
+                      {{ weather.time_of_day  }}
+                  </td>
+
+              </tr>
+          {% endfor %}
+      </table>
+  </div>
+ </div>
+</div>
+
+
+

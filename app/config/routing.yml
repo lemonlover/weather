@@ -1,0 +1,5 @@
+dev_index:
+    resource: "@DevIndexBundle/Controller/"
+    type:     annotation
+    prefix:   /
+

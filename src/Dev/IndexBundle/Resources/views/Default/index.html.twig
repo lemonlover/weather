@@ -1,0 +1,205 @@
+{% extends "::base.html.twig" %}
+
+{% block stylesheets %}
+
+    {% stylesheets 'bundles/devindex/css/*' filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+    {% javascripts 'bundles/devindex/js/jquery-1.10.2.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    {% javascripts 'bundles/devindex/js/spin.min.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block body %}
+
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand"  >Тестовое задание</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <div class="container"  >
+
+        <div class="row">
+            <div class="col-lg-12">
+
+
+
+                <div id="weather_div" >
+                        <select>
+                    <option value="">Выберите город</option>
+                    <option value="29838">Барнаул</option>
+                    <option value="29947">Бийск</option>
+                    <option value="36092">Белокуриха</option>
+                    </select>
+
+
+                    <button class="btn btn-primary" id='request' >Узнать</button>
+                    <div id="spinner"></div>
+                </div>
+
+                </div>
+
+                <div id="results"></div>
+
+            </div>
+        </div>
+
+    </div>
+<style>
+
+    body {margin-top: 100px;}
+    .selectric{
+        width: 200px;
+
+    }
+    .selectricWrapper{
+        width: 200px;
+        margin:10px ;
+        display: inline-block;
+
+    }
+    #weather_div{
+        margin-top:10px;   display: inline
+
+    }
+
+    #weather_div button{
+
+        margin: -20px 0px 0px 5px;
+    }
+
+
+
+    #city_name{
+        margin:10px;
+
+    }
+
+    #results{
+        margin: 60px 10px 10px 15px;
+    }
+
+    #spinner{
+        display: inline-block;
+        margin: -40px 0px 20px 5px;
+
+    }
+</style>
+
+    <!-- /.container -->
+{% endblock %}
+
+{% block javascripts %}
+
+    {% javascripts 'bundles/devindex/js/bootstrap.min.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts 'bundles/devindex/js/*' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script type="text/javascript">
+
+        $( document ).ready(function() {
+
+            var opts = {
+                lines: 13, // The number of lines to draw
+                length: 16, // The length of each line
+                width: 5, // The line thickness
+                radius: 22, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 24, // The rotation offset
+                direction: 1, // 1: clockwise, -1: counterclockwise
+                color: '#000000', // #rgb or #rrggbb or array of colors
+                speed: 2.2, // Rounds per second
+                trail: 80, // Afterglow percentage
+                shadow: true, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 0, // The z-index (defaults to 2000000000)
+                top: 0, // Top position relative to parent
+                left: 0 // Left position relative to parent
+            };
+
+
+
+            var  forecast;
+
+
+            $('select').selectric();
+
+            $("select").on('change', function(){
+                city_index = $(this).val() ;
+           });
+
+
+            $("#request").on('click', function(){
+
+
+              $loader =   $("<b>",{text:"Информация загружается...",id:"load"});
+
+               $("#spinner").append($loader);
+
+
+                $.ajax({
+                    url: "{{ path('get_weather') }}",
+                    type: "POST",
+                    data: {"city":city_index},
+                    success: function(data) {
+
+                        customizeForecasts( $.parseJSON( data));
+                    },
+
+                    error: function(XMLHttpRequest, textStatus, errorThrown)
+                    {
+                        alert('Error: ' +  errorThrown);
+                    }
+                });
+
+
+            });
+            
+
+           function customizeForecasts(forecasts){
+
+               if ($("#weather_info"))
+                    $("#weather_info").remove();
+
+               $cont  = $("<div>",{id:"weather_info"});
+
+               var city_name = $(".selectric").find("p.label").text();
+
+               $("<h3>",{text:city_name,id:"city_name" }).appendTo($cont);
+
+                for (var i = 0; i < forecasts.length; i++){
+                    $cont.append(forecasts[i]);
+                }
+               $loader.remove();
+               $cont.appendTo($("#results"));
+           }
+
+
+    });
+    </script>
+
+{% endblock %}
